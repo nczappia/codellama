@@ -72,7 +72,7 @@ class Llama:
         max_batch_size: int,
         model_parallel_size: Optional[int] = None,
     ) -> "Llama":
-        if not torch.distributed.is_initialized():
+        if not torch.distributed.is_initialized(): #***Removed distributed training***
             if device == "cuda":
                 torch.distributed.init_process_group("nccl")
             else:
