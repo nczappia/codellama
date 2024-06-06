@@ -74,17 +74,26 @@ class Llama:
     ) -> "Llama":
         if not torch.distributed.is_initialized(): #***Removed distributed training***
             if device == "cuda":
+                print('Found and using GPU.')
                 torch.distributed.init_process_group("nccl")
+                print('Initialized process group')
             else:
+                print('No GPU found')
                 torch.distributed.init_process_group("gloo")
+        print(model_parallel_is_initialized())
         if not model_parallel_is_initialized():
+            print('No model parallel initialized')
             if model_parallel_size is None:
                 model_parallel_size = int(os.environ.get("WORLD_SIZE", 1))
             initialize_model_parallel(model_parallel_size)
+        
+        print('Done distributing processes')
 
         local_rank = int(os.environ.get("LOCAL_RANK", 0))
         if device == "cuda":
+            print('Setting GPU')
             torch.cuda.set_device(local_rank)
+            print('GPU set')
 
         # seed must be the same in all processes
         torch.manual_seed(1)
@@ -92,6 +101,7 @@ class Llama:
         if local_rank > 0:
             sys.stdout = open(os.devnull, "w")
 
+        print('Beginning Checkpoint Loading')
         start_time = time.time()
         checkpoints = sorted(Path(ckpt_dir).glob("*.pth"))
         assert len(checkpoints) > 0, f"no checkpoint files found in {ckpt_dir}"
