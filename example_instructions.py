@@ -28,6 +28,8 @@ def main(
     )
     print('Finished Generator Build\n')
 
+    print('Model type:', type(generator))
+
     print('Creating Instructions')
     instructions = [
         [

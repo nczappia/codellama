@@ -26,6 +26,8 @@ elif torch.backends.mps.is_available():
 else:
     device = "cpu"
 
+print(device)
+
 Role = Literal["system", "user", "assistant"]
 
 
@@ -76,7 +78,6 @@ class Llama:
             if device == "cuda":
                 print('Found and using GPU.')
                 torch.distributed.init_process_group("nccl")
-                print('Initialized process group')
             else:
                 print('No GPU found')
                 torch.distributed.init_process_group("gloo")
